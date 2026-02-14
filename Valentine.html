@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Surprise!</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #ffe6e6;
+            text-align: center;
+        }
+
+        #container {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        img {
+            width: 220px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #d63384;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #yesBtn {
+            background-color: #08b80c;
+            color: white;
+        }
+
+        #noBtn {
+            background-color: #ff6767;
+            color: white;
+        }
+
+        #surpriseBtn {
+            background: linear-gradient(45deg, #ff4d6d, #ff8fa3);
+            color: white;
+            margin-top: 20px;
+            padding: 15px 30px;
+            display: none;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #success, #letter {
+            display: none;
+        }
+
+        #letter {
+            background: #fffafa;
+            padding: 30px;
+            border: 2px dashed #ff4d6d;
+            border-radius: 15px;
+            text-align: left;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            height: 20px;
+            font-weight: bold;
+        }
+
+        /* Ẩn trình phát YouTube */
+        #youtube-player {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            width: 0;
+            height: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="youtube-player"></div>
+
+    <div id="container">
+        <div id="quiz">
+            <img src="gif/Cat.gif" alt="Catmeme" />
+            <h1>Will you be my Valentine?</h1>
+            <div class="warning-text" id="warning"></div>
+            <div class="buttons">
+                <button id="yesBtn" onclick="celebrate()">Yes!</button>
+                <button id="noBtn" onclick="decline()">No</button>
+            </div>
+        </div>
+
+        <div id="success">
+            <img src="gif/Cute Cat GIF.gif" alt="CatHappy" />
+            <h1>Happy Valentine! ❤️</h1>
+            <button id="surpriseBtn" onclick="showLetter()">Bất ngờ 🎁</button>
+        </div>
+
+        <div id="letter">
+            <h2 style="text-align: center; color: #ff4d6d;">Gửi Bo iu của Xoài ❤️</h2>
+            <p>
+                Chào Bo iu,<br><br>
+                Đây là một bất ngờ dành tặng cho anh🎁<br>
+                Nay là lần đần tiên em và anh đón một ngày khá đặc biệt đó là Valentine, tuy là hong thể bên cạnh nhau nhưng mà chúng ta vẫn rất hạnh phúc và vui vẻ. Hôm nay em dành thời gian của mình để làm một điều ý nghĩa tặng cho anh, tuy là chỉ mang giá trị tinh thần thôi nên mong anh đón nhận và vui nháaa. Em cảm ơn anh đã yêu và thương em nè, anh lo lắng và quan tâm đến em, vì em là một người ít thể hiện cảm xúc với người khác nên có lẽ anh thấy em cục súc vậy thoi chứ em cũng yêu anh lắm lắm đó nhaaa. Em mong rằng chúng mình có thể đón thật nhiều ngày Valentine nha ❤️ Yêu anh<br><br>
+                Cảm ơn anh đã đồng ý làm Valentine của em!<br><br>
+                <strong>Ký tên: Vịu ơ của Bo thúi quắc</strong>
+            </p>
+            <button style="font-size: 14px; background: none; color: #ff4d6d; text-decoration: underline;" onclick="location.reload()">Xem lại từ đầu</button>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        let player;
+        let clickCount = 0;
+        let fontSize = 20;
+        let musicStarted = false;
+        const warnings = ["Chắc chưa?", "Cho chọn lần nữa đó!", "Coi như là không có ny lun nha!", "Ngon bấm cái này nữa đi!!!"];
+
+        // Khởi tạo YouTube Player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: 'cthtCRmTcgA', // ID bài "Ai Ngoài Anh"
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'cthtCRmTcgA'
+                }
+            });
+        }
+
+        // Hàm phát nhạc khi có tương tác
+        function playMusic() {
+            if (player && !musicStarted) {
+                player.playVideo();
+                musicStarted = true;
+            }
+        }
+
+        function decline() {
+            playMusic(); // Nhạc bắt đầu khi nhấn No
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            const warningText = document.getElementById('warning');
+
+            if (clickCount < warnings.length) {
+                noBtn.innerText = warnings[clickCount];
+                warningText.innerText = warnings[clickCount];
+                fontSize += 30;
+                yesBtn.style.fontSize = fontSize + "px";
+                clickCount++;
+            } else {
+                noBtn.style.display = 'none';
+                warningText.innerText = "Hết đường lui rồi nhé! 😂";
+            }
+        }
+
+        function celebrate() {
+            playMusic(); // Nhạc bắt đầu khi nhấn Yes
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('surpriseBtn').style.display = 'inline-block';
+            }, 500);
+        }
+
+        function showLetter() {
+            document.getElementById('success').style.display = 'none';
+            document.getElementById('letter').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
